@@ -47,7 +47,11 @@ class TaskController extends AbstractController
         $data = json_decode($request->getContent(), true);
 
         if(empty($data['titre']) || empty($data['status'])) {
-            return new Response('Missing required data', Response::HTTP_BAD_REQUEST);
+            return new Response(
+                json_encode(['success' => false, 'error' => 'Missing required data']),
+                Response::HTTP_INTERNAL_SERVER_ERROR,
+                ['Content-Type' => 'application/json']
+            );
         }
         
         $task = new Task();
@@ -93,7 +97,11 @@ class TaskController extends AbstractController
         $task = $taskRepository->find($id);
 
         if (!$task) {
-            return new Response('Task not found', Response::HTTP_NOT_FOUND);
+            return new Response(
+                json_encode(['success' => false, 'error' => 'Task not found']),
+                Response::HTTP_INTERNAL_SERVER_ERROR,
+                ['Content-Type' => 'application/json']
+            );
         }
 
         // Décoder les données JSON envoyées dans la requête
@@ -140,7 +148,11 @@ class TaskController extends AbstractController
     {
         $task = $taskRepository->find($id);
         if (!$task) {
-            return new Response('Task not found', Response::HTTP_NOT_FOUND);
+            return new Response(
+                json_encode(['success' => false, 'error' => 'Task not found']),
+                Response::HTTP_INTERNAL_SERVER_ERROR,
+                ['Content-Type' => 'application/json']
+            );
         }
 
         try{
