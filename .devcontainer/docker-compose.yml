@@ -2,17 +2,19 @@ version: '3.8'
 
 services:
   app:
+    mem_limit: 2g
+    cpus: 2
     image: php:8.1-fpm
     volumes:
       - ../:/var/www/html  # On remonte d'un niveau pour accéder au projet
     command: >
       sh -c "apt-get update &&
             apt-get install -y unzip curl &&
+            apt-get install -y default-mysql-client &&
             curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer &&
-            chmod -R 777 /var/www/html/var &&
+            chmod -R 777 /var/www/html &&
             docker-php-ext-install pdo pdo_mysql &&
             php-fpm"
-
 
   web:
     image: nginx:alpine
@@ -31,6 +33,7 @@ services:
       MYSQL_ROOT_PASSWORD: root
     ports:
       - "3307:3306"  # Garder le port comme dans ton fichier initial, ou changer si nécessaire
+    container_name: test-symfony_devcontainer-db-1
       
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
