@@ -1,0 +1,44 @@
+version: '3.8'
+
+services:
+  app:
+    image: php:8.1-fpm
+    volumes:
+      - ../:/var/www/html  # On remonte d'un niveau pour accéder au projet
+    command: >
+      sh -c "apt-get update &&
+            apt-get install -y unzip curl &&
+            curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer &&
+            chmod -R 777 /var/www/html/var &&
+            docker-php-ext-install pdo pdo_mysql &&
+            php-fpm"
+
+
+  web:
+    image: nginx:alpine
+    volumes:
+      - ../:/var/www/html  # On remonte d'un niveau pour accéder au projet
+      - ./nginx/conf.d/:/etc/nginx/conf.d/
+    ports:
+      - "8000:80"
+
+  db:
+    image: mysql:8.0
+    environment:
+      MYSQL_DATABASE: symfony
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+      MYSQL_ROOT_PASSWORD: root
+    ports:
+      - "3307:3306"  # Garder le port comme dans ton fichier initial, ou changer si nécessaire
+      
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    environment:
+      PMA_HOST: db
+      PMA_PORT: 3306
+      MYSQL_ROOT_PASSWORD: root
+    ports:
+      - "8080:80"
+    depends_on:
+      - db
