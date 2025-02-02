@@ -31,9 +31,6 @@ class TaskController extends AbstractController
         $tasks = $taskRepository->findAll();
         $data = $serializer->serialize($tasks, 'json', ['Groups' => 'task:read']);
 
-        print_r($data);
-        die();
-
         return new Response(
             $data,
             Response::HTTP_CREATED,
@@ -45,7 +42,7 @@ class TaskController extends AbstractController
         Cette méthode permet de créer une tâche
     */
     #[Route('/create', name: 'create_task', methods: ['POST'])]
-    public function createTask(Request $request, SerializerInterface $serializer): Response
+    public function createTask(Request $request): Response
     {
         $data = json_decode($request->getContent(), true);
 
@@ -89,7 +86,6 @@ class TaskController extends AbstractController
         $id,
         Request $request,
         TaskRepository $taskRepository,
-        SerializerInterface $serializer,
         EntityManagerInterface $entityManager // Injection de dépendance pour l'EntityManager
     ): Response
     {
@@ -163,7 +159,5 @@ class TaskController extends AbstractController
                 ['Content-Type' => 'application/json']
             );
         }
-
-        return new Response(null, Response::HTTP_NO_CONTENT);
     }
 }
